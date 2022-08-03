@@ -3,40 +3,53 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        // Input: --help
-        // Output: Msg
         // Cmd: -w - сколько работать
         //      -b - сколько отдыхать
+        //      -c - количество подходов
+        //      -m - множитель
         //      --help - вызвать помощь
         // Input: -w 1 -b 1
-        System.out.println("Введите время для работы и отдыха:");
+        System.out.println("Введите время для работы, отдыха, количество подходов, множитель:");
         String[] userInput = new Scanner(System.in).nextLine().split(" ");
 
         // все время в минутах
         int workTime = 1;
         int breakTime = 1;
+        int count = 1;
+        int multiplier = 1;
+
         int sizebreak = 30;
         int sizework = 30;
 
+        boolean isCallHelp = false;
+
         for  (int i = 0; i < userInput.length; i++) {
             switch (userInput[i]) {
-                case "--help" -> System.out.println("""
+                case "--help" -> { System.out.println("""
                         \nPomodoro - это приложение для улучшения личной эффективности.
                         -w - сколько работать
                         -b - сколько отдыхать
+                        -c - количество подходов
+                        -m - множитель
                         --help - вызвать помощь
                         """);
+                        isCallHelp = true; }
                 case "-w" -> workTime = Integer.parseInt(userInput[++i]);
                 case "-b" -> breakTime = Integer.parseInt(userInput[++i]);
+                case "-c" -> count = Integer.parseInt(userInput[++i]);
+                case "-m" -> multiplier = Integer.parseInt(userInput[++i]);
             }
+        }
 
-            System.out.printf("workTime = %d, breakTime = %d", workTime, breakTime);
-
+        if (!isCallHelp) {
             long startTime = System.currentTimeMillis();
-            timer(workTime, breakTime, sizebreak, sizework);
+            for (int i = 1; i <= count; i++) {
+                System.out.printf("Подход №%d: время работы - %d мин, время отдыха - %d мин\n", i, workTime, breakTime);
+                timer(workTime, breakTime, sizebreak, sizework);
+                workTime *= multiplier;
+            }
             long endTime = System.currentTimeMillis();
-            System.out.println("Таймер работал " + (endTime - startTime)/(1000*60) + " min");
-
+            System.out.println("Таймер работал " + (endTime - startTime) / (1000 * 60) + " min");
         }
     }
     private static void timer(int workTimeMin, int breakTimeMin, int sizeBreak, int sizeWork) throws InterruptedException {
